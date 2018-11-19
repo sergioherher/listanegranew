@@ -1,6 +1,9 @@
 package com.ucab.leonardo.cursodiplomado.actividades;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -21,13 +24,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.ucab.leonardo.cursodiplomado.R;
 import com.ucab.leonardo.cursodiplomado.RecyclerItemTouchHelper;
-
 import com.ucab.leonardo.cursodiplomado.UsuarioAdapter;
 import com.ucab.leonardo.cursodiplomado.api.ApiService;
 import com.ucab.leonardo.cursodiplomado.api.ClienteRetrofit;
 import com.ucab.leonardo.cursodiplomado.modelos.Usuario;
+import com.ucab.leonardo.cursodiplomado.respuesta.RespuestaObtenerUsuarios;
 
 import com.ucab.leonardo.cursodiplomado.respuesta.RespuestaBorraUsuario;
 import com.ucab.leonardo.cursodiplomado.respuesta.RespuestaObtenerUsuarios;
@@ -104,6 +110,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 startActivity(intent);
             }
         });
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MainActivity.this, new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                Log.w(TAG, "onSuccess: " + instanceIdResult.getToken());
+            }
+        });
+
+        // A partir de Android Oreo, las notificaciones deben pertenecer a un canal
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String idCanal = "1";
+            String nombreCanal = "Mi canal";
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(idCanal,
+                    nombreCanal, NotificationManager.IMPORTANCE_HIGH));
+        }
     }
 
     @Override
